@@ -1,24 +1,26 @@
+testing specs for recipes
 
-     ,-----.,--.                  ,--. ,---.   ,--.,------.  ,------.
-    '  .--./|  | ,---. ,--.,--. ,-|  || o   \  |  ||  .-.  \ |  .---'
-    |  |    |  || .-. ||  ||  |' .-. |`..'  |  |  ||  |  \  :|  `--, 
-    '  '--'\|  |' '-' ''  ''  '\ `-' | .'  /   |  ||  '--'  /|  `---.
-     `-----'`--' `---'  `----'  `---'  `--'    `--'`-------' `------'
-    ----------------------------------------------------------------- 
+name:string
+summary:text
+description:text
+
+- name must be present
+- name must be 5 - 100 characters
+- summary must be present
+- summary must be 10-150 characters
+- description must be present
+- description must be 20-500 chracters
+- chef_id must be present
+- 
+
+testing specs for chefs
+chefname: string
+email: string
+
+- chef name must be present
+- chef name must be 3-40 characters
+- email must be present
+- email must be unique (since we will use this for logins later)
+- mail must be valid
 
 
-Welcome to your Rails project on Cloud9 IDE!
-
-To get started, just do the following:
-
-1. Run the project with the "Run Project" button in the menu bar on top of the IDE.
-2. Preview your new app by clicking on the URL that appears in the Run panel below (https://recipemanager-eakarsu.c9.io/).
-
-Happy coding!
-The Cloud9 IDE team
-
-
-## Support & Documentation
-
-Visit http://docs.c9.io for support, or to learn more about using Cloud9 IDE. 
-To watch some training videos, visit http://www.youtube.com/user/c9ide
