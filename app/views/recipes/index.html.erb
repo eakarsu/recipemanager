@@ -1,5 +1,13 @@
 <%= render 'shared/page_title', title: "All Recipes" %>
 
+<ul class="nav nav-tabs">
+  <li class="active">
+    <%= link_to "Recipes", recipes_path %>
+  </li>
+  <li >
+    <%= link_to "Chefs", chefs_path %>
+  </li>
+</ul>
 <%= will_paginate %>
 
 <!-- http://1.gravatar.com/avatar/66a201d359ccf129676e08a59dd30fcf -->
