@@ -24,3 +24,19 @@ email: string
 - mail must be valid
 
 
+Chefs:
+
+What we have already:
+-Chef model and validations
+-chefs table with columns and email
+
+What we need to:
+-Add password to the chefs table so chefs can be authenticated
+-Use email as log in credentials
+-Ability to register new chefs
+-to displau chegf profile
+-to list chefs 
+-for chefs to log in an dlog out
+-restrict actions like create recipe edit etc for chefs only
+-Restrict edit of recipes who created the recipe
+
