@@ -52,10 +52,11 @@ group :development, :test do
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
   gem 'spring'
   
-  
+   
   gem 'bcrypt'
 
-  gem 'fog'
+  gem 'fog', '1.23.0'
+  
   
   group :development, :test do
     # Use sqlite3 as the database for Active Record
