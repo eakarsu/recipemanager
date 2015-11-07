@@ -54,6 +54,8 @@ group :development, :test do
   
   gem 'bcrypt'
 
+  gem 'fog'
+  
   group :development, :test do
     # Use sqlite3 as the database for Active Record
     gem 'sqlite3'
