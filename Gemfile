@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-ruby '2.1.5'
+ruby '2.2.1'
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.2.1'
@@ -26,7 +26,7 @@ gem 'jbuilder', '~> 2.0'
 # bundle exec rake doc:rails generates the API under doc/api.
 gem 'sdoc', '~> 0.4.0', group: :doc
 
-gem 'carrierwave', '0.10.0'
+gem 'carrierwave'
 gem 'mini_magick', '3.8.0'
 
 # Use ActiveModel has_secure_password
@@ -55,8 +55,8 @@ group :development, :test do
    
   gem 'bcrypt'
 
-  gem 'fog', '1.23.0'
-  
+  gem 'fog-aws'
+   
   
   group :development, :test do
     # Use sqlite3 as the database for Active Record
