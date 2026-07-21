@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "classification": "retain-internal-quarantine",
+  "deployable": false,
+  "networkExecutionAllowed": false,
+  "authenticationStatus": "blocked-unsupported-runtime",
+  "runtime": "Ruby 2.2.1 / Rails 4.2.1 (2015, unsupported)",
+  "reason": "Legacy learning application requires a supported-stack migration before any server or login validation"
+}

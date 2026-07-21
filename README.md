@@ -1,42 +1,11 @@
-testing specs for recipes
+# Recipemanager — quarantined archive
 
-name:string
-summary:text
-description:text
+This repository is a 2015 Rails 4.2.1 / Ruby 2.2.1 learning application. Those
+runtime versions and the locked dependency set are obsolete and unsupported; do not
+run it as a network service or use it with real identities/data. The historical app
+contains recipe/chef CRUD and session login, but no current runtime or login success is
+claimed. See `BOUNDARY.json`, `SECURITY.md`, and `_COMPLETENESS_REVIEW.md`.
 
-- name must be present
-- name must be 5 - 100 characters
-- summary must be present
-- summary must be 10-150 characters
-- description must be present
-- description must be 20-500 chracters
-- chef_id must be present
-- 
-
-testing specs for chefs
-chefname: string
-email: string
-
-- chef name must be present
-- chef name must be 3-40 characters
-- email must be present
-- email must be unique (since we will use this for logins later)
-- mail must be valid
-
-
-Chefs:
-
-What we have already:
--Chef model and validations
--chefs table with columns and email
-
-What we need to:
--Add password to the chefs table so chefs can be authenticated
--Use email as log in credentials
--Ability to register new chefs
--to displau chegf profile
--to list chefs 
--for chefs to log in an dlog out
--restrict actions like create recipe edit etc for chefs only
--Restrict edit of recipes who created the recipe
-
+`./start.sh` performs an offline archive-boundary check only. A future revival must be
+a separately reviewed migration to a supported Ruby/Rails stack with dependency,
+database, authentication, authorization, upload, and browser-test work.

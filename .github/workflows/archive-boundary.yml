@@ -1,0 +1,11 @@
+name: archive-boundary
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./start.sh
+      - uses: gitleaks/gitleaks-action@v2
