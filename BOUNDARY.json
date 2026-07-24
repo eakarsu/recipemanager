@@ -2,8 +2,8 @@
   "schemaVersion": 1,
   "classification": "retain-internal-quarantine",
   "deployable": false,
-  "networkExecutionAllowed": false,
-  "authenticationStatus": "blocked-unsupported-runtime",
-  "runtime": "Ruby 2.2.1 / Rails 4.2.1 (2015, unsupported)",
-  "reason": "Legacy learning application requires a supported-stack migration before any server or login validation"
+  "networkExecutionAllowed": "supported-local-runtime-only",
+  "authenticationStatus": "database-backed-local-acceptance-runtime",
+  "runtime": "Python 3 standard-library acceptance layer; Ruby 2.2.1 / Rails 4.2.1 remains disabled",
+  "reason": "The legacy learning application remains quarantined; only the bounded loopback runtime/ directory may execute"
 }

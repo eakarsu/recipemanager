@@ -18,3 +18,6 @@
 
 #ignore c9 files
 .c9/
+
+# Local runtime configuration and secrets
+.env
