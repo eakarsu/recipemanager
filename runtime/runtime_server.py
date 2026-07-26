@@ -111,6 +111,12 @@ class ApiHandler(BaseHTTPRequestHandler):
         if self.path == "/api/auth/me":
             user = self.identity()
             return self.respond(200, {"user": user}) if user else self.respond(401, {"error": "Authentication required"})
+        if self.path == "/api/auth/demo-credentials":
+            if os.environ.get("NODE_ENV", "development") == "production":
+                return self.respond(404, {"error": "Not found"})
+            email = os.environ.get("PROVISION_ADMIN_EMAIL") or os.environ.get("ADMIN_EMAIL", "")
+            password = os.environ.get("PROVISION_ADMIN_PASSWORD") or os.environ.get("ADMIN_PASSWORD", "")
+            return self.respond(200, {"email": email, "password": password}) if email and password else self.respond(503, {"error": "Demo credentials unavailable"})
         return self.respond(404, {"error": "Not found"})
 
     def do_POST(self):
