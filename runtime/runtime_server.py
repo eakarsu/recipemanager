@@ -106,16 +106,42 @@ class ApiHandler(BaseHTTPRequestHandler):
         self.cors_headers()
         self.end_headers()
 
+
+    def native_workspace_page(self):
+        from pathlib import Path
+        nonce = secrets.token_hex(24)
+        page = (Path(__file__).parent / "ai-workspace.html").read_text().replace("__NONCE__", nonce).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "text/html; charset=utf-8")
+        self.send_header("Content-Length", str(len(page)))
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Security-Policy", f"default-src 'none'; script-src 'nonce-{nonce}'; style-src 'nonce-{nonce}'; connect-src 'self'; img-src 'self' blob:; frame-ancestors 'none'")
+        self.end_headers()
+        self.wfile.write(page)
+
     def do_GET(self):
+        if self.path == "/ai-workspace":
+            return self.native_workspace_page()
         if self.path == "/api/health":
             query("SELECT 1 FROM runtime_schema_migrations LIMIT 1")
             return self.respond(200, {"status": "ok"})
         if self.path == "/api/auth/me":
             user = self.identity()
             return self.respond(200, {"user": user}) if user else self.respond(401, {"error": "Authentication required"})
+        if self.path == "/api/ai/history":
+            user = self.identity()
+            if not user:
+                return self.respond(401, {"error": "Authentication required"})
+            rows = query(
+                "SELECT row_to_json(receipt) FROM ("
+                "SELECT id, content, model, created_at FROM runtime_ai_receipts "
+                f"WHERE user_id={user['id']} ORDER BY created_at DESC, id DESC LIMIT 100"
+                ") receipt"
+            )
+            return self.respond(200, {"history": [json.loads(row) for row in rows]})
         if self.path == "/api/auth/demo-credentials":
-            email = os.environ.get("PROVISION_ADMIN_EMAIL") or os.environ.get("ADMIN_EMAIL", "")
-            password = os.environ.get("PROVISION_ADMIN_PASSWORD") or os.environ.get("ADMIN_PASSWORD", "")
+            email = os.environ.get("ADMIN_EMAIL") or os.environ.get("PROVISION_ADMIN_EMAIL", "")
+            password = os.environ.get("ADMIN_PASSWORD") or os.environ.get("PROVISION_ADMIN_PASSWORD", "")
             return self.respond(200, {"email": email, "password": password}) if email and password else self.respond(503, {"error": "Demo credentials unavailable"})
         return self.respond(404, {"error": "Not found"})
 
@@ -209,8 +235,10 @@ class UiHandler(BaseHTTPRequestHandler):
         sys.stdout.flush()
 
     def login_page(self, demo=False, error=""):
-        email = os.environ.get("PROVISION_ADMIN_EMAIL") or os.environ.get("ADMIN_EMAIL", "") if demo else ""
-        password = os.environ.get("PROVISION_ADMIN_PASSWORD") or os.environ.get("ADMIN_PASSWORD", "") if demo else ""
+        email = (os.environ.get("ADMIN_EMAIL") or os.environ.get("PROVISION_ADMIN_EMAIL", "")) if demo else ""
+        password = (os.environ.get("ADMIN_PASSWORD") or os.environ.get("PROVISION_ADMIN_PASSWORD", "")) if demo else ""
+        if demo and (not email or not password):
+            error = "Demo credentials unavailable"
         return f"""<!doctype html><html><head><meta charset='utf-8'><title>Recipe Manager Login</title></head>
 <body><main><h1>Recipe Manager</h1><p>Supported local acceptance runtime; the legacy Rails archive remains disabled.</p>
 <form method='get' action='/login'><input type='hidden' name='demo' value='1'><button type='submit'>Auto Fill Demo Credentials</button></form><form id='login' method='post' action='/login'><input id='email' name='email' value='{html.escape(email, quote=True)}' type='email' placeholder='Email' autocomplete='username' required><input id='password' name='password' value='{html.escape(password, quote=True)}' type='password' placeholder='Password' autocomplete='current-password' required><button type='submit'>Sign In</button></form><pre id='result' role='status'>{html.escape(error) if error else 'Not signed in.'}</pre></main></body></html>""".encode("utf-8")
@@ -240,12 +268,12 @@ class UiHandler(BaseHTTPRequestHandler):
         form = urllib.parse.parse_qs(self.rfile.read(length).decode("utf-8"))
         email = form.get("email", [""])[0]
         password = form.get("password", [""])[0]
-        expected_email = os.environ.get("PROVISION_ADMIN_EMAIL") or os.environ.get("ADMIN_EMAIL", "")
-        expected_password = os.environ.get("PROVISION_ADMIN_PASSWORD") or os.environ.get("ADMIN_PASSWORD", "")
-        if not (hmac.compare_digest(email, expected_email) and hmac.compare_digest(password, expected_password)):
+        expected_email = os.environ.get("ADMIN_EMAIL") or os.environ.get("PROVISION_ADMIN_EMAIL", "")
+        expected_password = os.environ.get("ADMIN_PASSWORD") or os.environ.get("PROVISION_ADMIN_PASSWORD", "")
+        if not (expected_email and expected_password and hmac.compare_digest(email, expected_email) and hmac.compare_digest(password, expected_password)):
             self.send_page(self.login_page(error="Login failed"))
             return
-        body = f"""<!doctype html><html><head><meta charset='utf-8'><title>Recipe Manager Dashboard</title></head><body><main><h1>Recipe Manager</h1><section id='dashboard'><h2>Authenticated dashboard</h2><p>Signed in as {html.escape(email)}.</p><p>The supported local recipe organization and governed AI boundary is ready.</p></section></main></body></html>""".encode("utf-8")
+        body = f"""<!doctype html><html><head><meta charset='utf-8'><title>Recipe Manager Dashboard</title></head><body><main><h1>Recipe Manager</h1><section id='dashboard'><h2>Authenticated dashboard</h2><a href='http://127.0.0.1:{required("BACKEND_PORT")}/ai-workspace'>AI workspace</a><p>Signed in as {html.escape(email)}.</p><p>The supported local recipe organization and governed AI boundary is ready.</p></section></main></body></html>""".encode("utf-8")
         self.send_page(body)
 
 
