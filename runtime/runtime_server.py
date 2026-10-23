@@ -139,10 +139,6 @@ class ApiHandler(BaseHTTPRequestHandler):
                 ") receipt"
             )
             return self.respond(200, {"history": [json.loads(row) for row in rows]})
-        if self.path == "/api/auth/demo-credentials":
-            email = os.environ.get("ADMIN_EMAIL") or os.environ.get("PROVISION_ADMIN_EMAIL", "")
-            password = os.environ.get("ADMIN_PASSWORD") or os.environ.get("PROVISION_ADMIN_PASSWORD", "")
-            return self.respond(200, {"email": email, "password": password}) if email and password else self.respond(503, {"error": "Demo credentials unavailable"})
         return self.respond(404, {"error": "Not found"})
 
     def do_POST(self):
@@ -234,14 +230,10 @@ class UiHandler(BaseHTTPRequestHandler):
         sys.stdout.write("ui " + format_string % args + "\n")
         sys.stdout.flush()
 
-    def login_page(self, demo=False, error=""):
-        email = (os.environ.get("ADMIN_EMAIL") or os.environ.get("PROVISION_ADMIN_EMAIL", "")) if demo else ""
-        password = (os.environ.get("ADMIN_PASSWORD") or os.environ.get("PROVISION_ADMIN_PASSWORD", "")) if demo else ""
-        if demo and (not email or not password):
-            error = "Demo credentials unavailable"
+    def login_page(self, error=""):
         return f"""<!doctype html><html><head><meta charset='utf-8'><title>Recipe Manager Login</title></head>
 <body><main><h1>Recipe Manager</h1><p>Supported local acceptance runtime; the legacy Rails archive remains disabled.</p>
-<form method='get' action='/login'><input type='hidden' name='demo' value='1'><button type='submit'>Auto Fill Demo Credentials</button></form><form id='login' method='post' action='/login'><input id='email' name='email' value='{html.escape(email, quote=True)}' type='email' placeholder='Email' autocomplete='username' required><input id='password' name='password' value='{html.escape(password, quote=True)}' type='password' placeholder='Password' autocomplete='current-password' required><button type='submit'>Sign In</button></form><pre id='result' role='status'>{html.escape(error) if error else 'Not signed in.'}</pre></main></body></html>""".encode("utf-8")
+<form id='login' method='post' action='/login'><input id='email' name='email' type='email' placeholder='Email' autocomplete='username' required><input id='password' name='password' type='password' placeholder='Password' autocomplete='current-password' required><button type='submit'>Sign In</button></form><pre id='result' role='status'>{html.escape(error) if error else 'Not signed in.'}</pre></main></body></html>""".encode("utf-8")
 
     def send_page(self, body):
         self.send_response(200)
@@ -257,8 +249,7 @@ class UiHandler(BaseHTTPRequestHandler):
         if parsed.path not in ("/", "/login"):
             self.send_error(404)
             return
-        demo = urllib.parse.parse_qs(parsed.query).get("demo") == ["1"]
-        self.send_page(self.login_page(demo=demo))
+        self.send_page(self.login_page())
 
     def do_POST(self):
         if self.path != "/login":

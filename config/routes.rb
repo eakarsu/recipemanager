@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  get '/api/health', to: 'health#show'
   root 'pages#home'
   
   get '/home', to: 'pages#home'
